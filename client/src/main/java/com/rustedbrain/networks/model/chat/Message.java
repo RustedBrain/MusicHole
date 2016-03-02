@@ -1,4 +1,6 @@
-package com.rustedbrain.model;
+package com.rustedbrain.networks.model.chat;
+
+import com.rustedbrain.networks.model.members.Account;
 
 import java.io.Serializable;
 import java.util.Date;

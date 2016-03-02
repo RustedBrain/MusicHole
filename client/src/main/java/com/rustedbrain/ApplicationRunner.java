@@ -1,8 +1,8 @@
 package com.rustedbrain;
 
-import com.rustedbrain.model.Account;
-import com.rustedbrain.view.MusicHoleMainWindow;
-import com.rustedbrain.view.logging.MusicHoleLogging;
+import com.rustedbrain.networks.model.members.Account;
+import com.rustedbrain.networks.view.MusicHoleMainWindow;
+import com.rustedbrain.networks.view.logging.MusicHoleLogging;
 
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TransferQueue;

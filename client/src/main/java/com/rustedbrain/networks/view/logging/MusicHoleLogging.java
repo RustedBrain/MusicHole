@@ -1,6 +1,6 @@
-package com.rustedbrain.view.logging;
+package com.rustedbrain.networks.view.logging;
 
-import com.rustedbrain.model.Account;
+import com.rustedbrain.networks.model.members.Account;
 import com.rustedbrain.networks.utils.logging.PasswordVerifier;
 
 import javax.swing.*;
@@ -57,9 +57,10 @@ public class MusicHoleLogging extends JDialog {
     private void onOK() {
         try {
             PasswordVerifier verifier = PasswordVerifier.getInstance(this.textFieldServerName.getText(), this.textFieldServerPort.getText());
-            accounts.put(verifier.getProperties(this.textFieldLogin.getText(), new String(this.passwordFieldPassword.getPassword())));
+            accounts.put(verifier.getAccount(this.textFieldLogin.getText(), new String(this.passwordFieldPassword.getPassword())));
             dispose();
         } catch (IOException | ClassNotFoundException | NumberFormatException | InterruptedException e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }

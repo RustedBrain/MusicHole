@@ -7,17 +7,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import java.io.Serializable;
 import java.sql.Date;
 
-/**
- * Created by RustedBrain on 13.01.2016.
- */
 @Entity
 @Table(name = "account", schema = "public", uniqueConstraints = {
         @UniqueConstraint(name = "uq_person", columnNames = {"name", "surname"}),
         @UniqueConstraint(name = "uq_mail", columnNames = "mail"),
         @UniqueConstraint(name = "uq_login", columnNames = "login")})
-public class Account extends PostgresEntity {
+public class Account extends PostgresEntity implements Serializable {
 
     @Column(name = "login", nullable = false)
     private String login;

@@ -1,4 +1,4 @@
-package com.rustedbrain.networks.utils;
+package com.rustedbrain.networks.utils.model;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

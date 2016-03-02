@@ -29,7 +29,7 @@ public class PasswordServerHandler extends Thread {
 
     @Override
     public void run() {
-        System.out.println("Password server is working now!!!");
+        System.out.println(this.getClass().getSimpleName() + " start to handle connections...");
         while (!isInterrupted())
             try {
                 Socket client = serverSocket.accept();

@@ -1,7 +1,7 @@
-package com.rustedbrain.view;
+package com.rustedbrain.networks.view;
 
-import com.rustedbrain.model.Account;
-import com.rustedbrain.model.Message;
+import com.rustedbrain.networks.model.chat.Message;
+import com.rustedbrain.networks.model.members.Account;
 import com.rustedbrain.networks.utils.chat.ChatClientFactory;
 import com.rustedbrain.networks.utils.chat.ChatClientHandler;
 
@@ -59,6 +59,7 @@ public class MusicHoleMainWindow extends JDialog {
                     , Integer.parseInt(textFieldPort.getText())
                     , textAreaChatMessages);
         } catch (IOException e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Server is not available");
         }
         chat.start();
@@ -90,8 +91,8 @@ public class MusicHoleMainWindow extends JDialog {
                         , textAreaChatMessages);
                 JOptionPane.showMessageDialog(MusicHoleMainWindow.this, "Successful");
             } catch (IOException e1) {
-                JOptionPane.showMessageDialog(MusicHoleMainWindow.this, "Server is not available");
                 e1.printStackTrace();
+                JOptionPane.showMessageDialog(MusicHoleMainWindow.this, "Server is not available");
             }
         });
     }

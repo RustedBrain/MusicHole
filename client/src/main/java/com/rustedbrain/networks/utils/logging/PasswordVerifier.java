@@ -1,6 +1,6 @@
 package com.rustedbrain.networks.utils.logging;
 
-import com.rustedbrain.model.Account;
+import com.rustedbrain.networks.model.members.Account;
 
 import javax.net.SocketFactory;
 import java.io.DataOutputStream;
@@ -32,7 +32,7 @@ public class PasswordVerifier {
         return new PasswordVerifier(InetAddress.getByName(serverName), Integer.parseInt(port));
     }
 
-    public Account getProperties(String name, String password) throws IOException, ClassNotFoundException {
+    public Account getAccount(String name, String password) throws IOException, ClassNotFoundException {
         new DataOutputStream(this.socket.getOutputStream()).writeUTF(name + " " + password);
         Account account = (Account) new ObjectInputStream(this.socket.getInputStream()).readObject();
         return account;

@@ -28,6 +28,7 @@ public class ChatServerHandler extends Thread {
 
     @Override
     public void run() {
+        System.out.println(this.getClass().getSimpleName() + " start to handle connections...");
         while (!isInterrupted())
             try {
                 Socket socket = serverSocket.accept();

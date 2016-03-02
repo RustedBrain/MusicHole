@@ -1,6 +1,7 @@
 package com.rustedbrain.networks.utils.chat;
 
-import com.rustedbrain.model.Message;
+
+import com.rustedbrain.networks.model.chat.Message;
 
 import javax.swing.text.JTextComponent;
 import java.io.IOException;

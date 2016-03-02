@@ -1,6 +1,7 @@
-package com.rustedbrain.model;
+package com.rustedbrain.networks.model.members;
 
-import com.rustedbrain.networks.utils.Validator;
+import com.rustedbrain.networks.model.PostgresEntity;
+import com.rustedbrain.networks.utils.model.Validator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,9 +10,6 @@ import javax.persistence.UniqueConstraint;
 import java.io.Serializable;
 import java.sql.Date;
 
-/**
- * Created by RustedBrain on 13.01.2016.
- */
 @Entity
 @Table(name = "account", schema = "public", uniqueConstraints = {
         @UniqueConstraint(name = "uq_person", columnNames = {"name", "surname"}),
