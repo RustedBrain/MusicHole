@@ -13,6 +13,7 @@ import java.util.concurrent.TransferQueue;
 public class MusicHoleLogging extends JDialog {
     public JTextField textFieldServerName;
     public JTextField textFieldServerPort;
+    public Account account;
     private TransferQueue<Account> accounts;
     private JPanel contentPane;
     private JButton buttonOK;
@@ -25,16 +26,12 @@ public class MusicHoleLogging extends JDialog {
     private JLabel labelServerName;
     private JLabel labelServerPort;
 
-    public MusicHoleLogging(TransferQueue<Account> accounts) {
-        this();
-        this.accounts = accounts;
+    {
         this.textFieldServerName.setText("127.0.0.1");
         this.textFieldServerPort.setText("7777");
-        this.pack();
-        this.setVisible(true);
     }
 
-    private MusicHoleLogging() {
+    public MusicHoleLogging() {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -57,15 +54,16 @@ public class MusicHoleLogging extends JDialog {
     private void onOK() {
         try {
             PasswordVerifier verifier = PasswordVerifier.getInstance(this.textFieldServerName.getText(), this.textFieldServerPort.getText());
-            accounts.put(verifier.getAccount(this.textFieldLogin.getText(), new String(this.passwordFieldPassword.getPassword())));
+            this.account = verifier.getAccount(this.textFieldLogin.getText(), new String(this.passwordFieldPassword.getPassword()));
             dispose();
-        } catch (IOException | ClassNotFoundException | NumberFormatException | InterruptedException e) {
+        } catch (IOException | ClassNotFoundException | NumberFormatException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }
 
     private void onCancel() {
+        this.account = null;
         dispose();
     }
 }

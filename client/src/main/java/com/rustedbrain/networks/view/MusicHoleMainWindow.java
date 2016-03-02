@@ -55,9 +55,11 @@ public class MusicHoleMainWindow extends JDialog {
             textFieldServerName.setText("127.0.0.1");
             textFieldPort.setText("6666");
             radioButtonAnonymous.setSelected(false);
+            System.out.println("NOT Chat");
             chat = ChatClientFactory.getChatHandler(textFieldServerName.getText()
                     , Integer.parseInt(textFieldPort.getText())
                     , textAreaChatMessages);
+            System.out.println("Chat created");
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Server is not available");
@@ -101,8 +103,6 @@ public class MusicHoleMainWindow extends JDialog {
         this();
         this.account = account;
         setAccountInfo(account);
-        this.pack();
-        this.setVisible(true);
     }
 
     private void setAccountInfo(Account account) {

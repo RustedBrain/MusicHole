@@ -33,8 +33,10 @@ public class PasswordVerifier {
     }
 
     public Account getAccount(String name, String password) throws IOException, ClassNotFoundException {
+        System.out.println(this.getClass().getSimpleName() + " start to getting account from server...");
         new DataOutputStream(this.socket.getOutputStream()).writeUTF(name + " " + password);
         Account account = (Account) new ObjectInputStream(this.socket.getInputStream()).readObject();
+        System.out.println(account + " successfully received...");
         return account;
     }
 }
