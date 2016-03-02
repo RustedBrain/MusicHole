@@ -34,6 +34,7 @@ public class ChatClientHandler extends Thread {
         socket = new Socket(serverName, serverPort);
         in = new ObjectInputStream(socket.getInputStream());
         out = new ObjectOutputStream(socket.getOutputStream());
+        out.flush();
         this.textComponent = textComponent;
         this.messagesCount = messagesCount;
         receiver = new MessageReceiver();

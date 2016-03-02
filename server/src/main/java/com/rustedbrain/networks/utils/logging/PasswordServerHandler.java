@@ -55,8 +55,8 @@ public class PasswordServerHandler extends Thread {
 
         public PasswordVerifier(Socket client) throws IOException {
             this.client = client;
-            this.in = new DataInputStream(client.getInputStream());
             this.out = new ObjectOutputStream(client.getOutputStream());
+            this.in = new DataInputStream(client.getInputStream());
         }
 
         @Override

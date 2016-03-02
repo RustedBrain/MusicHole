@@ -15,8 +15,8 @@ public class NetworkApp {
 
     private static void initBeans() throws IOException {
 
-        chatHandler = new ChatServerHandler(6666);
         factory = new Configuration().configure().buildSessionFactory();
+        chatHandler = new ChatServerHandler(6666);
         passwordHandler = new PasswordServerHandler(7777, factory);
     }
 

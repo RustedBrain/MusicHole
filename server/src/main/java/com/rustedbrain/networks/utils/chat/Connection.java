@@ -19,10 +19,10 @@ public class Connection extends Thread {
 
     public Connection(Socket aClientSocket, ChatServerHandler chat) {
         try {
-
             clientSocket = aClientSocket;
-            in = new ObjectInputStream(clientSocket.getInputStream());
             out = new ObjectOutputStream(clientSocket.getOutputStream());
+            in = new ObjectInputStream(clientSocket.getInputStream());
+            out.flush();
         } catch (IOException e) {
             System.out.println("Connection:" + e.getMessage());
         }
