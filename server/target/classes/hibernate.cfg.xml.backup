@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+
+    <session-factory>
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://192.168.64.106:5432/musichole</property>
+        <property name="connection.username">postgres</property>
+        <property name="connection.password">postgres</property>
+        <property name="default_schema">public</property>
+        <property name="connection.pool_size">1</property>
+        <property name="dialect">org.hibernate.dialect.PostgreSQL9Dialect</property>
+        <property name="current_session_context_class">thread</property>
+        <property name="hbm2ddl.auto">update</property>
+
+        <mapping class="com.rustedbrain.networks.model.members.Account"/>
+        <mapping class="com.rustedbrain.networks.model.music.Album"/>
+        <mapping class="com.rustedbrain.networks.model.music.Group"/>
+        <mapping class="com.rustedbrain.networks.model.music.Member"/>
+        <mapping class="com.rustedbrain.networks.model.music.Song"/>
+        <mapping class="com.rustedbrain.networks.model.music.Genre"/>
+    </session-factory>
+
+</hibernate-configuration>

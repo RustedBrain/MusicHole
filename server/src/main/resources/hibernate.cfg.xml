@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+
+    <session-factory>
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://fizzy-cherry.db.elephantsql.com:5432/kpzwvzjo</property>
+        <property name="connection.username">kpzwvzjo</property>
+        <property name="connection.password">QW6lZvHe5YrE1HRCn8Szo1ZKPvqTfsg1</property>
+        <property name="default_schema">public</property>
+        <property name="connection.pool_size">1</property>
+        <property name="dialect">org.hibernate.dialect.PostgreSQL9Dialect</property>
+        <property name="current_session_context_class">thread</property>
+        <property name="hbm2ddl.auto">update</property>
+
+        <mapping class="com.rustedbrain.networks.model.members.Account"/>
+        <mapping class="com.rustedbrain.networks.model.music.Album"/>
+        <mapping class="com.rustedbrain.networks.model.music.Group"/>
+        <mapping class="com.rustedbrain.networks.model.music.Member"/>
+        <mapping class="com.rustedbrain.networks.model.music.Song"/>
+        <mapping class="com.rustedbrain.networks.model.music.Genre"/>
+    </session-factory>
+
+</hibernate-configuration>
