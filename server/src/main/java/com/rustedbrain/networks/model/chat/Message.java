@@ -3,6 +3,7 @@ package com.rustedbrain.networks.model.chat;
 import com.rustedbrain.networks.model.members.Account;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Date;
 
 /**
@@ -11,6 +12,7 @@ import java.util.Date;
 public class Message implements Serializable, Comparable<Date> {
 
     private Account account;
+    private InetAddress inetAddress;
     private String message;
     private Date date;
 
@@ -41,6 +43,14 @@ public class Message implements Serializable, Comparable<Date> {
     @Override
     public int compareTo(Date o) {
         return this.date.compareTo(o);
+    }
+
+    public InetAddress getInetAddress() {
+        return inetAddress;
+    }
+
+    public void setInet6Address(InetAddress inetAddress) {
+        this.inetAddress = inetAddress;
     }
 
     @Override

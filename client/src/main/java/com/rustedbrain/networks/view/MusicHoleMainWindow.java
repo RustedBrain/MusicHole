@@ -22,7 +22,6 @@ public class MusicHoleMainWindow extends JDialog {
     private JList listPlayList;
     private JTextField textFieldChatAnswer;
     private JButton buttonSend;
-    private JTextArea textAreaChatMessages;
     private JButton buttonPlay;
     private JButton buttonDownload;
     private JProgressBar progressBar1;
@@ -47,6 +46,7 @@ public class MusicHoleMainWindow extends JDialog {
     private JLabel labelGenre;
     private JLabel labelGroup;
     private JLabel labelAlbum;
+    private JEditorPane editorPaneChat;
     private Account account;
     private ChatClientHandler chat;
 
@@ -58,7 +58,7 @@ public class MusicHoleMainWindow extends JDialog {
             System.out.println("NOT Chat");
             chat = ChatClientFactory.getChatHandler(textFieldServerName.getText()
                     , Integer.parseInt(textFieldPort.getText())
-                    , textAreaChatMessages);
+                    , editorPaneChat);
             System.out.println("Chat created");
         } catch (IOException e) {
             e.printStackTrace();
@@ -90,7 +90,7 @@ public class MusicHoleMainWindow extends JDialog {
                 chat.close();
                 chat = ChatClientFactory.getChatHandler(textFieldServerName.getText()
                         , Integer.parseInt(textFieldPort.getText())
-                        , textAreaChatMessages);
+                        , editorPaneChat);
                 JOptionPane.showMessageDialog(MusicHoleMainWindow.this, "Successful");
             } catch (IOException e1) {
                 e1.printStackTrace();
@@ -120,6 +120,7 @@ public class MusicHoleMainWindow extends JDialog {
             message.setAccount(this.account);
             message.setDate(new Date());
             message.setMessage(this.textFieldChatAnswer.getText());
+            message.setInet6Address(chat.socket.getInetAddress());
             chat.send(message);
             this.textFieldChatAnswer.setText(null);
         } catch (IOException e) {

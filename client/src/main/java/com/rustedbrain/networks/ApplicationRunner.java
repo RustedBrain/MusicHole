@@ -19,7 +19,6 @@ public class ApplicationRunner {
 
         if (logging.account != null) {
             mainWindow = new MusicHoleMainWindow(logging.account);
-            System.out.println(111);
             mainWindow.pack();
             mainWindow.setVisible(true);
         }

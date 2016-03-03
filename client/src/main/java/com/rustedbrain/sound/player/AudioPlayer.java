@@ -1,4 +1,4 @@
-package com.rustedbrain.sound;
+package com.rustedbrain.sound.player;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
@@ -10,6 +10,8 @@ import java.net.URL;
 public interface AudioPlayer {
 
     void play(URL url) throws IOException, UnsupportedAudioFileException;
+
+    void playUDP();
 
     void stopAll();
 }

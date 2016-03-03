@@ -1,4 +1,4 @@
-package com.rustedbrain.sound;
+package com.rustedbrain.sound.player;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineUnavailableException;

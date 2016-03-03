@@ -260,11 +260,9 @@
                     <properties/>
                     <border type="bevel-lowered"/>
                     <children>
-                      <component id="9022c" class="javax.swing.JTextArea" binding="textAreaChatMessages">
+                      <component id="2d57b" class="javax.swing.JEditorPane" binding="editorPaneChat">
                         <constraints/>
-                        <properties>
-                          <editable value="false"/>
-                        </properties>
+                        <properties/>
                       </component>
                     </children>
                   </scrollpane>

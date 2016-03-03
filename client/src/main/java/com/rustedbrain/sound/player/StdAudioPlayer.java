@@ -1,4 +1,4 @@
-package com.rustedbrain.sound;
+package com.rustedbrain.sound.player;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -30,6 +30,11 @@ public final class StdAudioPlayer implements AudioPlayer {
                 ? directPlayer : convertingPlayer;
 
         play(player, url);
+    }
+
+    @Override
+    public void playUDP() {
+
     }
 
     private void play(AudioStreamPlayer player, URL url) {
