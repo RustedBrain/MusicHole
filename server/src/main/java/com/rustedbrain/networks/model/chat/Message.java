@@ -55,10 +55,6 @@ public class Message implements Serializable, Comparable<Date> {
 
     @Override
     public String toString() {
-        return "Message{" +
-                "account=" + account +
-                ", message='" + message + '\'' +
-                ", date=" + date +
-                '}';
+        return "[" + this.date.toString() + "]" + this.account.getLogin() + ": " + this.message;
     }
 }

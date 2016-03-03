@@ -9,16 +9,16 @@ import java.net.InetAddress;
  */
 public class ChatClientFactory {
 
-    public static ChatClientHandler getChatHandler(String serverName, int port, JEditorPane output) throws IOException {
+    public static ChatClientHandler getChatHandler(String serverName, int port, JList output) throws IOException {
         InetAddress address = InetAddress.getByName(serverName);
         return new ChatClientHandler(address, port, output);
     }
 
-    public static ChatClientHandler getChatHandler(InetAddress serverName, int port, JEditorPane output) throws IOException {
+    public static ChatClientHandler getChatHandler(InetAddress serverName, int port, JList output) throws IOException {
         return new ChatClientHandler(serverName, port, output);
     }
 
-    public static ChatClientHandler getChatHandler(InetAddress serverName, String port, JEditorPane output) throws IOException {
+    public static ChatClientHandler getChatHandler(InetAddress serverName, String port, JList output) throws IOException {
         return new ChatClientHandler(serverName, Integer.parseInt(port), output);
     }
 }

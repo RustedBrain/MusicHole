@@ -260,9 +260,11 @@
                     <properties/>
                     <border type="bevel-lowered"/>
                     <children>
-                      <component id="2d57b" class="javax.swing.JEditorPane" binding="editorPaneChat">
+                      <component id="30297" class="javax.swing.JList" binding="listChat">
                         <constraints/>
-                        <properties/>
+                        <properties>
+                          <selectionMode value="0"/>
+                        </properties>
                       </component>
                     </children>
                   </scrollpane>

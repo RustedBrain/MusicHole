@@ -6,9 +6,7 @@ import com.rustedbrain.networks.utils.chat.ChatClientFactory;
 import com.rustedbrain.networks.utils.chat.ChatClientHandler;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.util.Date;
 
@@ -46,20 +44,21 @@ public class MusicHoleMainWindow extends JDialog {
     private JLabel labelGenre;
     private JLabel labelGroup;
     private JLabel labelAlbum;
-    private JEditorPane editorPaneChat;
+    private JList listChat;
     private Account account;
     private ChatClientHandler chat;
 
     {
         try {
+            DefaultListModel model = new DefaultListModel();
+            this.listChat.setModel(model);
             textFieldServerName.setText("127.0.0.1");
             textFieldPort.setText("6666");
             radioButtonAnonymous.setSelected(false);
-            System.out.println("NOT Chat");
-            chat = ChatClientFactory.getChatHandler(textFieldServerName.getText()
+            chat = ChatClientFactory.getChatHandler(
+                    textFieldServerName.getText()
                     , Integer.parseInt(textFieldPort.getText())
-                    , editorPaneChat);
-            System.out.println("Chat created");
+                    , listChat);
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Server is not available");
@@ -90,13 +89,27 @@ public class MusicHoleMainWindow extends JDialog {
                 chat.close();
                 chat = ChatClientFactory.getChatHandler(textFieldServerName.getText()
                         , Integer.parseInt(textFieldPort.getText())
-                        , editorPaneChat);
+                        , listChat);
                 JOptionPane.showMessageDialog(MusicHoleMainWindow.this, "Successful");
             } catch (IOException e1) {
                 e1.printStackTrace();
                 JOptionPane.showMessageDialog(MusicHoleMainWindow.this, "Server is not available");
             }
         });
+
+        listChat.addMouseListener(new MouseAdapter() {
+                                      public void mouseClicked(MouseEvent evt) {
+                                          JList list = (JList) evt.getSource();
+                                          if (evt.getClickCount() == 2 && !listChat.isSelectionEmpty()) {
+                                              int index = list.locationToIndex(evt.getPoint());
+
+                                          } else if (evt.isPopupTrigger()) { //if the event shows the menu
+                                              listChat.setSelectedIndex(listChat.locationToIndex(evt.getPoint())); //select the item
+                                              new JPopupMenu().show(listChat, evt.getX(), evt.getY()); //and show the menu
+                                          }
+                                      }
+                                  }
+        );
     }
 
     public MusicHoleMainWindow(Account account) {

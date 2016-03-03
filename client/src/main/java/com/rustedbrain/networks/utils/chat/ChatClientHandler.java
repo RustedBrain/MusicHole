@@ -9,9 +9,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Date;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Created by RustedBrain on 16.01.2016.
@@ -22,15 +19,14 @@ public class ChatClientHandler extends Thread {
     private Thread receiver;
     private ObjectOutputStream out;
     private ObjectInputStream in;
-    private Map<Date, Message> messageMap;
     private Integer messagesCount;
-    private JEditorPane textComponent;
+    private JList textComponent;
 
-    ChatClientHandler(InetAddress serverName, int serverPort, JEditorPane textComponent) throws IOException {
+    ChatClientHandler(InetAddress serverName, int serverPort, JList textComponent) throws IOException {
         this(serverName, serverPort, 200, textComponent);
     }
 
-    ChatClientHandler(InetAddress serverName, int serverPort, Integer messagesCount, JEditorPane textComponent) throws IOException {
+    ChatClientHandler(InetAddress serverName, int serverPort, Integer messagesCount, JList textComponent) throws IOException {
         socket = new Socket(serverName, serverPort);
         in = new ObjectInputStream(socket.getInputStream());
         out = new ObjectOutputStream(socket.getOutputStream());
@@ -41,7 +37,7 @@ public class ChatClientHandler extends Thread {
         receiver.start();
     }
 
-    public void setTextComponent(JEditorPane textComponent) {
+    public void setTextComponent(JList textComponent) {
         this.textComponent = textComponent;
     }
 
@@ -62,21 +58,24 @@ public class ChatClientHandler extends Thread {
     }
 
     private void addMessage(Message message) {
-        if (this.messageMap == null || (messagesCount * 2) < this.messageMap.size()) {
-            this.messageMap = new TreeMap<>();
+        if (textComponent.getModel().getSize() * 2 > messagesCount) {
+            DefaultListModel model = (DefaultListModel) textComponent.getModel();
+            model.ensureCapacity(messagesCount);
         }
-        this.messageMap.put(message.getDate(), message);
         if (this.textComponent != null) {
-            this.textComponent.setText(this.textComponent.getText() + "\n" + "[" + message.getDate().toString() + "]" + " " + message.getAccount().getLogin() + ":" + message.getMessage());
+            DefaultListModel model = (DefaultListModel) this.textComponent.getModel();
+            model.addElement(message);
         }
     }
 
     private void clearMessages() {
-        this.messageMap.clear();
+        DefaultListModel model = (DefaultListModel) textComponent.getModel();
+        model.clear();
     }
 
-    public Message getMessage(Date date) {
-        return this.messageMap.get(date);
+    public Message getMessage(int index) {
+        DefaultListModel model = (DefaultListModel) textComponent.getModel();
+        return (Message) model.get(index);
     }
 
     private class MessageReceiver extends Thread {
