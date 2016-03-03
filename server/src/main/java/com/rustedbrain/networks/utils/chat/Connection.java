@@ -22,11 +22,10 @@ public class Connection extends Thread {
             clientSocket = aClientSocket;
             out = new ObjectOutputStream(clientSocket.getOutputStream());
             in = new ObjectInputStream(clientSocket.getInputStream());
-            out.flush();
+            this.chat = chat;
         } catch (IOException e) {
-            System.out.println("Connection:" + e.getMessage());
+            e.printStackTrace();
         }
-        this.chat = chat;
     }
 
 
@@ -35,7 +34,7 @@ public class Connection extends Thread {
         while (!isInterrupted()) {
             try {
                 chat.sendToAll((Message) in.readObject());
-                out.flush(); // заставляем поток закончить передачу данных.
+                out.flush();
             } catch (IOException e) {
                 this.interrupt();
                 e.printStackTrace();

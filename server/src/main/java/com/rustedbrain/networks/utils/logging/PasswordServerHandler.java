@@ -37,6 +37,16 @@ public class PasswordServerHandler extends Thread {
             } catch (Exception x) {
                 x.printStackTrace();
             }
+        try {
+            this.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void close() throws IOException {
+        this.session.close();
+        this.serverSocket.close();
     }
 
     public Account getAccount(String name) {
@@ -71,13 +81,17 @@ public class PasswordServerHandler extends Thread {
                 e.printStackTrace();
             } finally {
                 try {
-                    in.close();
-                    out.close();
-                    client.close();
+                    this.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+        }
+
+        private void close() throws IOException {
+            in.close();
+            out.close();
+            client.close();
         }
     }
 }
