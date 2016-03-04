@@ -1,6 +1,6 @@
 package com.rustedbrain.networks.model.chat;
 
-import com.rustedbrain.networks.model.members.Account;
+import com.rustedbrain.networks.model.members.ProxyAccount;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -9,17 +9,17 @@ import java.util.Date;
 
 public class Message implements Serializable, Comparable<Date> {
 
-    private Account account;
+    private ProxyAccount account;
     private InetAddress addressSender;
     private InetAddress addressReceiver;
     private String message;
     private Date date;
 
-    public Account getAccount() {
+    public ProxyAccount getAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(ProxyAccount account) {
         this.account = account;
     }
 
@@ -62,6 +62,6 @@ public class Message implements Serializable, Comparable<Date> {
 
     @Override
     public String toString() {
-        return "[" + this.date.toString() + "]" + this.account.getLogin() + ": " + this.message;
+        return "[" + this.date.toString() + "]" + this.account.login + ": " + this.message;
     }
 }

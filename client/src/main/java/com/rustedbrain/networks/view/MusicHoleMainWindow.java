@@ -1,13 +1,12 @@
 package com.rustedbrain.networks.view;
 
 import com.rustedbrain.networks.model.members.Account;
+import com.rustedbrain.networks.model.members.ProxyAccount;
 import com.rustedbrain.networks.utils.chat.ChatClientFactory;
 import com.rustedbrain.networks.utils.chat.ChatClientHandler;
 import com.rustedbrain.networks.utils.chat.MessageUtil;
 
 import javax.swing.*;
-import javax.swing.event.MenuKeyEvent;
-import javax.swing.event.MenuKeyListener;
 import java.awt.event.*;
 import java.io.IOException;
 
@@ -50,6 +49,7 @@ public class MusicHoleMainWindow extends JDialog {
     private Account account;
     private MessageUtil messageUtil;
     private ChatClientHandler chat;
+    private AccountInfoWindow accountInfoWindow = new AccountInfoWindow();
 
     {
         try {
@@ -67,8 +67,10 @@ public class MusicHoleMainWindow extends JDialog {
 
         buttonSend.addActionListener(e -> {
             try {
-                if (textFieldChatAnswer.getText() != null && !textFieldChatAnswer.getText().equals(""))
+                if (textFieldChatAnswer.getText() != null && !textFieldChatAnswer.getText().equals("")) {
+                    ProxyAccount account = messageUtil.createProxyAccount(MusicHoleMainWindow.this.account);
                     MessageUtil.sendToAll(chat, this.radioButtonAnonymous.isSelected(), textFieldChatAnswer.getText(), account);
+                }
                 textFieldChatAnswer.setText(null);
             } catch (Exception e1) {
                 e1.printStackTrace();
@@ -116,30 +118,41 @@ public class MusicHoleMainWindow extends JDialog {
         this();
         this.account = account;
         setAccountInfo(account);
+        this.setLocationRelativeTo(null);
     }
 
     private void chatInit() throws IOException {
         DefaultListModel model = new DefaultListModel();
         this.listChat.setModel(model);
 
+        JPopupMenu menu = new JPopupMenu();
+
         JMenuItem item = new JMenuItem("1.Show info");
-        item.addMenuKeyListener(new MenuKeyListener() {
-            @Override
-            public void menuKeyTyped(MenuKeyEvent e) {
+        item.addActionListener(e -> {
+            ProxyAccount proxyAccount = this.chat.getMessage(this.listChat.getSelectedIndex()).getAccount();
+            MusicHoleMainWindow.this.accountInfoWindow.fillAccountFields(proxyAccount);
+        });
 
+
+        menu.add(item);
+
+        listChat.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showPopup(e);
+                }
             }
 
-            @Override
-            public void menuKeyPressed(MenuKeyEvent e) {
-
-            }
-
-            @Override
-            public void menuKeyReleased(MenuKeyEvent e) {
-
+            private void showPopup(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    popup.show(e.getComponent(),
+                            e.getX(), e.getY());
+                }
             }
         });
-        this.listChat.setComponentPopupMenu(new JPopupMenu());
+
         textFieldServerName.setText("127.0.0.1");
         textFieldPort.setText("6666");
         chat = ChatClientFactory.getChatHandler(
@@ -161,4 +174,5 @@ public class MusicHoleMainWindow extends JDialog {
         chat.close();
         dispose();
     }
+
 }
