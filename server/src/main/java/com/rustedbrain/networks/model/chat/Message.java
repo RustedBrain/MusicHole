@@ -12,7 +12,8 @@ import java.util.Date;
 public class Message implements Serializable, Comparable<Date> {
 
     private Account account;
-    private InetAddress inetAddress;
+    private InetAddress addressSender;
+    private InetAddress addressReceiver;
     private String message;
     private Date date;
 
@@ -45,12 +46,20 @@ public class Message implements Serializable, Comparable<Date> {
         return this.date.compareTo(o);
     }
 
-    public InetAddress getInetAddress() {
-        return inetAddress;
+    public InetAddress getAddressSender() {
+        return addressSender;
     }
 
-    public void setInet6Address(InetAddress inetAddress) {
-        this.inetAddress = inetAddress;
+    public void setAddressSender(InetAddress addressSender) {
+        this.addressSender = addressSender;
+    }
+
+    public InetAddress getAddressReceiver() {
+        return addressReceiver;
+    }
+
+    public void setAddressReceiver(InetAddress addressReceiver) {
+        this.addressReceiver = addressReceiver;
     }
 
     @Override

@@ -1,16 +1,18 @@
 package com.rustedbrain.networks.view;
 
-import com.rustedbrain.networks.model.chat.Message;
 import com.rustedbrain.networks.model.members.Account;
 import com.rustedbrain.networks.utils.chat.ChatClientFactory;
 import com.rustedbrain.networks.utils.chat.ChatClientHandler;
+import com.rustedbrain.networks.utils.chat.MessageUtil;
 
 import javax.swing.*;
+import javax.swing.event.MenuKeyEvent;
+import javax.swing.event.MenuKeyListener;
 import java.awt.event.*;
 import java.io.IOException;
-import java.util.Date;
 
 public class MusicHoleMainWindow extends JDialog {
+    public JPopupMenu popup;
     private JPanel contentPane;
     private JTabbedPane tabbedPaneMenus;
     private JLabel labelLogin;
@@ -46,31 +48,33 @@ public class MusicHoleMainWindow extends JDialog {
     private JLabel labelAlbum;
     private JList listChat;
     private Account account;
+    private MessageUtil messageUtil;
     private ChatClientHandler chat;
 
     {
         try {
-            DefaultListModel model = new DefaultListModel();
-            this.listChat.setModel(model);
-            textFieldServerName.setText("127.0.0.1");
-            textFieldPort.setText("6666");
-            radioButtonAnonymous.setSelected(false);
-            chat = ChatClientFactory.getChatHandler(
-                    textFieldServerName.getText()
-                    , Integer.parseInt(textFieldPort.getText())
-                    , listChat);
+            chatInit();
+            chat.start();
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Server is not available");
         }
-        chat.start();
     }
 
     public MusicHoleMainWindow() {
         setContentPane(contentPane);
         setModal(true);
 
-        buttonSend.addActionListener(e -> onSend());
+        buttonSend.addActionListener(e -> {
+            try {
+                if (textFieldChatAnswer.getText() != null && !textFieldChatAnswer.getText().equals(""))
+                    MessageUtil.sendToAll(chat, this.radioButtonAnonymous.isSelected(), textFieldChatAnswer.getText(), account);
+                textFieldChatAnswer.setText(null);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(MusicHoleMainWindow.this, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -102,10 +106,6 @@ public class MusicHoleMainWindow extends JDialog {
                                           JList list = (JList) evt.getSource();
                                           if (evt.getClickCount() == 2 && !listChat.isSelectionEmpty()) {
                                               int index = list.locationToIndex(evt.getPoint());
-
-                                          } else if (evt.isPopupTrigger()) { //if the event shows the menu
-                                              listChat.setSelectedIndex(listChat.locationToIndex(evt.getPoint())); //select the item
-                                              new JPopupMenu().show(listChat, evt.getX(), evt.getY()); //and show the menu
                                           }
                                       }
                                   }
@@ -118,6 +118,36 @@ public class MusicHoleMainWindow extends JDialog {
         setAccountInfo(account);
     }
 
+    private void chatInit() throws IOException {
+        DefaultListModel model = new DefaultListModel();
+        this.listChat.setModel(model);
+
+        JMenuItem item = new JMenuItem("1.Show info");
+        item.addMenuKeyListener(new MenuKeyListener() {
+            @Override
+            public void menuKeyTyped(MenuKeyEvent e) {
+
+            }
+
+            @Override
+            public void menuKeyPressed(MenuKeyEvent e) {
+
+            }
+
+            @Override
+            public void menuKeyReleased(MenuKeyEvent e) {
+
+            }
+        });
+        this.listChat.setComponentPopupMenu(new JPopupMenu());
+        textFieldServerName.setText("127.0.0.1");
+        textFieldPort.setText("6666");
+        chat = ChatClientFactory.getChatHandler(
+                textFieldServerName.getText()
+                , Integer.parseInt(textFieldPort.getText())
+                , listChat);
+    }
+
     private void setAccountInfo(Account account) {
         this.textFieldLogin.setText(account.getLogin());
         this.textFieldName.setText(account.getName());
@@ -125,20 +155,6 @@ public class MusicHoleMainWindow extends JDialog {
         this.textFieldNationality.setText(account.getNationality());
         this.textFieldMail.setText(account.getMail());
         this.textFieldBirthday.setText(account.getBirthday().toString());
-    }
-
-    private void onSend() {
-        try {
-            Message message = new Message();
-            message.setAccount(this.account);
-            message.setDate(new Date());
-            message.setMessage(this.textFieldChatAnswer.getText());
-            message.setInet6Address(chat.socket.getInetAddress());
-            chat.send(message);
-            this.textFieldChatAnswer.setText(null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void onClose() {

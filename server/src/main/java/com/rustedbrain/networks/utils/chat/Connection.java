@@ -33,8 +33,11 @@ public class Connection extends Thread {
     public void run() {
         while (!isInterrupted()) {
             try {
-                chat.sendToAll((Message) in.readObject());
-                out.flush();
+                Message message = (Message) in.readObject();
+                if (message.getAddressReceiver() != null)
+                    chat.send(message, message.getAddressReceiver());
+                else
+                    chat.sendToAll(message);
             } catch (IOException e) {
                 this.interrupt();
                 e.printStackTrace();
