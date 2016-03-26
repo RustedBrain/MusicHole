@@ -22,7 +22,7 @@ public class MusicHoleLogging extends JDialog {
     private JPasswordField passwordFieldPassword;
     private JLabel LabelLogin;
     private JLabel LabelPassword;
-    private JTabbedPane tabbedPane1;
+    private JTabbedPane tabbedPaneCapabilities;
     private JLabel labelServerName;
     private JLabel labelServerPort;
 

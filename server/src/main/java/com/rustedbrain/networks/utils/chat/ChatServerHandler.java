@@ -9,6 +9,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by RustedBrain on 16.01.2016.
@@ -17,6 +20,7 @@ public class ChatServerHandler extends Thread {
 
     private ServerSocket serverSocket;
     private Map<InetAddress, Connection> connections = new HashMap<>();
+    private Timer timer = new Timer(true);
 
     public ChatServerHandler() throws IOException {
         serverSocket = ServerSocketFactory.getDefault().createServerSocket();
@@ -53,5 +57,17 @@ public class ChatServerHandler extends Thread {
 
     public void remove(InetAddress inetAddress) {
         connections.remove(inetAddress);
+    }
+
+    public void initOnlineStatisticsSender() {
+        this.timer.scheduleAtFixedRate(new OnlineStatisticsSender(), 0, TimeUnit.SECONDS.toMillis(60));
+    }
+
+    private class OnlineStatisticsSender extends TimerTask {
+
+        @Override
+        public void run() {
+
+        }
     }
 }

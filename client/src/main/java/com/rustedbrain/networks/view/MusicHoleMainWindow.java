@@ -46,10 +46,15 @@ public class MusicHoleMainWindow extends JDialog {
     private JLabel labelGroup;
     private JLabel labelAlbum;
     private JList listChat;
+    private JList listOnlineUsers;
     private Account account;
-    private MessageUtil messageUtil;
     private ChatClientHandler chat;
     private AccountInfoWindow accountInfoWindow = new AccountInfoWindow();
+    private JPopupMenu menu = new JPopupMenu();
+
+    {
+        popupMenuInit();
+    }
 
     {
         try {
@@ -67,17 +72,12 @@ public class MusicHoleMainWindow extends JDialog {
 
         buttonSend.addActionListener(e -> {
             try {
-                if (textFieldChatAnswer.getText() != null && !textFieldChatAnswer.getText().equals("")) {
-                    ProxyAccount account = messageUtil.createProxyAccount(MusicHoleMainWindow.this.account);
-                    MessageUtil.sendToAll(chat, this.radioButtonAnonymous.isSelected(), textFieldChatAnswer.getText(), account);
-                }
-                textFieldChatAnswer.setText(null);
+                onButtonSendClicked();
             } catch (Exception e1) {
                 e1.printStackTrace();
                 JOptionPane.showMessageDialog(MusicHoleMainWindow.this, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -106,12 +106,27 @@ public class MusicHoleMainWindow extends JDialog {
         listChat.addMouseListener(new MouseAdapter() {
                                       public void mouseClicked(MouseEvent evt) {
                                           JList list = (JList) evt.getSource();
-                                          if (evt.getClickCount() == 2 && !listChat.isSelectionEmpty()) {
+                                          if (SwingUtilities.isRightMouseButton(evt) && !listChat.isSelectionEmpty()) {
                                               int index = list.locationToIndex(evt.getPoint());
+                                              menu.show(listChat, evt.getX(), evt.getY());
+
                                           }
                                       }
                                   }
         );
+        textFieldChatAnswer.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                    try {
+                        onButtonSendClicked();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        JOptionPane.showMessageDialog(MusicHoleMainWindow.this, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+            }
+        });
     }
 
     public MusicHoleMainWindow(Account account) {
@@ -121,37 +136,29 @@ public class MusicHoleMainWindow extends JDialog {
         this.setLocationRelativeTo(null);
     }
 
-    private void chatInit() throws IOException {
-        DefaultListModel model = new DefaultListModel();
-        this.listChat.setModel(model);
+    private void onButtonSendClicked() throws Exception {
+        if (textFieldChatAnswer.getText() != null && !textFieldChatAnswer.getText().equals("")) {
+            ProxyAccount account = MessageUtil.createProxyAccount(MusicHoleMainWindow.this.account);
+            MessageUtil.sendToAll(chat, this.radioButtonAnonymous.isSelected(), textFieldChatAnswer.getText(), account);
+            textFieldChatAnswer.setText(null);
+        }
+    }
 
-        JPopupMenu menu = new JPopupMenu();
-
-        JMenuItem item = new JMenuItem("1.Show info");
+    private void popupMenuInit() {
+        JMenuItem item = new JMenuItem("Info");
         item.addActionListener(e -> {
             ProxyAccount proxyAccount = this.chat.getMessage(this.listChat.getSelectedIndex()).getAccount();
             MusicHoleMainWindow.this.accountInfoWindow.fillAccountFields(proxyAccount);
+            MusicHoleMainWindow.this.accountInfoWindow.pack();
+            ViewUtil.centerWindow(MusicHoleMainWindow.this.accountInfoWindow);
+            MusicHoleMainWindow.this.accountInfoWindow.setVisible(true);
         });
-
-
         menu.add(item);
+    }
 
-        listChat.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    showPopup(e);
-                }
-            }
-
-            private void showPopup(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    popup.show(e.getComponent(),
-                            e.getX(), e.getY());
-                }
-            }
-        });
+    private void chatInit() throws IOException {
+        DefaultListModel model = new DefaultListModel();
+        this.listChat.setModel(model);
 
         textFieldServerName.setText("127.0.0.1");
         textFieldPort.setText("6666");
