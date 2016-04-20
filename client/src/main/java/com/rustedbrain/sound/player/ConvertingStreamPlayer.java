@@ -36,14 +36,12 @@ public final class ConvertingStreamPlayer implements AudioStreamPlayer {
     }
 
     @Override
-    public void play(final AudioInputStream stream)
-            throws LineUnavailableException, IOException {
+    public void play(final AudioInputStream stream) throws LineUnavailableException, IOException {
 
         final AudioFormat outFormat = getOutFormat(stream.getFormat());
         final Info info = new Info(SourceDataLine.class, outFormat);
 
-        try (final SourceDataLine line =
-                     (SourceDataLine) AudioSystem.getLine(info)) {
+        try (final SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info)) {
 
             if (line != null) {
                 line.open(outFormat);

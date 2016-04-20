@@ -1,7 +1,7 @@
 package com.rustedbrain.crud.view.dialogs;
 
+import com.rustedbrain.networks.controllers.utils.Validator;
 import com.rustedbrain.networks.model.members.Account;
-import com.rustedbrain.networks.utils.model.Validator;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;

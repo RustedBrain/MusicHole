@@ -1,7 +1,7 @@
 package com.rustedbrain.networks.model.members;
 
+import com.rustedbrain.networks.controllers.utils.Validator;
 import com.rustedbrain.networks.model.PostgresEntity;
-import com.rustedbrain.networks.utils.model.Validator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

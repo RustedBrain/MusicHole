@@ -1,10 +1,11 @@
 package com.rustedbrain.networks.view;
 
+import com.rustedbrain.networks.controllers.utils.chat.ChatClientFactory;
+import com.rustedbrain.networks.controllers.utils.chat.ChatClientHandler;
+import com.rustedbrain.networks.controllers.utils.chat.MessageUtil;
 import com.rustedbrain.networks.model.members.Account;
 import com.rustedbrain.networks.model.members.ProxyAccount;
-import com.rustedbrain.networks.utils.chat.ChatClientFactory;
-import com.rustedbrain.networks.utils.chat.ChatClientHandler;
-import com.rustedbrain.networks.utils.chat.MessageUtil;
+import com.rustedbrain.networks.sound.VUServer;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -51,6 +52,7 @@ public class MusicHoleMainWindow extends JDialog {
     private ChatClientHandler chat;
     private AccountInfoWindow accountInfoWindow = new AccountInfoWindow();
     private JPopupMenu menu = new JPopupMenu();
+    private com.rustedbrain.networks.sound.VUServer VUServer;
 
     {
         popupMenuInit();
@@ -109,7 +111,6 @@ public class MusicHoleMainWindow extends JDialog {
                                           if (SwingUtilities.isRightMouseButton(evt) && !listChat.isSelectionEmpty()) {
                                               int index = list.locationToIndex(evt.getPoint());
                                               menu.show(listChat, evt.getX(), evt.getY());
-
                                           }
                                       }
                                   }
@@ -182,4 +183,7 @@ public class MusicHoleMainWindow extends JDialog {
         dispose();
     }
 
+    public void setVUServer(VUServer VUServer) {
+        this.VUServer = VUServer;
+    }
 }

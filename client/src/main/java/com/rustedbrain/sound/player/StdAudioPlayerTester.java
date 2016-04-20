@@ -13,7 +13,7 @@ public class StdAudioPlayerTester {
     public static void main(String[] args) throws IOException, UnsupportedAudioFileException {
         final AudioPlayer player = new AudioPlayerFactory().get();
 
-        final String mp3 = "D:\\Media\\Music\\Ego Likeness - New Legion EP (2015)\\07. New Legion (Third Stage Remix by Stoneburner).mp3";
+        final String mp3 = "D:\\Media\\Music\\test.mp3";
 
         playPath(player, mp3);
     }

@@ -1,7 +1,7 @@
 package com.rustedbrain.networks.view.logging;
 
+import com.rustedbrain.networks.controllers.utils.logging.PasswordVerifier;
 import com.rustedbrain.networks.model.members.Account;
-import com.rustedbrain.networks.utils.logging.PasswordVerifier;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;

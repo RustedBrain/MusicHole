@@ -1,6 +1,6 @@
 package com.rustedbrain.networks.model;
 
-import com.rustedbrain.networks.utils.model.Validator;
+import com.rustedbrain.networks.controllers.utils.Validator;
 
 import javax.persistence.*;
 import java.io.Serializable;
