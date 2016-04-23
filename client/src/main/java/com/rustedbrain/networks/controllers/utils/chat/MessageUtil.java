@@ -1,8 +1,10 @@
 package com.rustedbrain.networks.controllers.utils.chat;
 
-import com.rustedbrain.networks.model.chat.ChatMessage;
+import com.rustedbrain.networks.controllers.utils.ChatController;
 import com.rustedbrain.networks.model.members.Account;
 import com.rustedbrain.networks.model.members.ProxyAccount;
+import com.rustedbrain.networks.model.messages.ChatMessage;
+import com.rustedbrain.networks.model.messages.SystemAction;
 
 import java.net.InetAddress;
 import java.util.Date;
@@ -14,14 +16,15 @@ public class MessageUtil {
 
     private final static String ANONYMOUS_USER = "Anonymous";
 
-    public static void sendToAll(ChatClientHandler chat, boolean isAnonymous, String text, ProxyAccount myAccount) throws Exception {
+    public static void sendToAll(ChatController chat, boolean isAnonymous, String text, ProxyAccount myAccount) throws Exception {
         if (isAnonymous) {
             chat.send(createAnonymousMessageToAll(text, InetAddress.getLocalHost()));
-        } else chat.send(createMessageToAll(text, myAccount, InetAddress.getLocalHost()));
+        } else
+            chat.send(createMessageToAll(text, myAccount, InetAddress.getLocalHost()));
 
     }
 
-    public static void sendToAccount(ChatClientHandler chat, boolean isAnonymous, ChatMessage messageOld, String text, ProxyAccount myAccount) throws Exception {
+    public static void sendToAccount(ChatController chat, boolean isAnonymous, ChatMessage messageOld, String text, ProxyAccount myAccount) throws Exception {
         ChatMessage message;
         if (isAnonymous) {
             message = createAnonymousMessageToAll(text, InetAddress.getLocalHost());
@@ -49,6 +52,7 @@ public class MessageUtil {
 
     private static ChatMessage prepareMessage(String text, InetAddress addressSender) {
         ChatMessage message = new ChatMessage();
+        message.setAction(SystemAction.CHAT);
         message.setDate(new Date());
         message.setMessage(text);
         message.setAddressSender(addressSender);

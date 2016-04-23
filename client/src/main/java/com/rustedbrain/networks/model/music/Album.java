@@ -61,10 +61,6 @@ public class Album extends PostgresEntity {
 
     @Override
     public String toString() {
-        return "Album{" +
-                "name='" + super.getName() + '\'' +
-                ", id=" + super.getId() +
-                ", time=" + time +
-                '}';
+        return super.getName();
     }
 }

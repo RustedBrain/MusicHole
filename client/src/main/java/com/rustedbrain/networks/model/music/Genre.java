@@ -42,10 +42,6 @@ public class Genre extends PostgresEntity {
 
     @Override
     public String toString() {
-        return "Genre{" +
-                "id=" + super.getId() +
-                ", name='" + super.getName() + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+        return super.getName();
     }
 }

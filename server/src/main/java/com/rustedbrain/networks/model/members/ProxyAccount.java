@@ -13,4 +13,8 @@ public class ProxyAccount implements Serializable {
     public Date birthday;
     public Date registration;
 
+    @Override
+    public String toString() {
+        return this.login;
+    }
 }

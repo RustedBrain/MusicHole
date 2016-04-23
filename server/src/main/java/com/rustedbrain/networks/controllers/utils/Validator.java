@@ -21,10 +21,14 @@ public enum Validator {
         pattern = Pattern.compile(regex);
     }
 
+//    public String validate(final String word) {
+//        matcher = pattern.matcher(word);
+//        if (!matcher.matches())
+//            throw new IllegalArgumentException();
+//        return word;
+//    }
+
     public String validate(final String word) {
-        matcher = pattern.matcher(word);
-        if (!matcher.matches())
-            throw new IllegalArgumentException();
         return word;
     }
 

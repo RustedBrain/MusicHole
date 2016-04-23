@@ -1,60 +1,68 @@
 package com.rustedbrain.networks.controllers;
 
-import com.rustedbrain.networks.controllers.utils.ChatConnection;
-import com.rustedbrain.networks.model.chat.Message;
+import com.rustedbrain.networks.model.messages.ChatMessage;
+import com.rustedbrain.networks.model.messages.SystemMessage;
 
-import javax.net.ServerSocketFactory;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
 
 /**
- * Created by RustedBrain on 16.01.2016.
+ * Created by RustedBrain on 22.04.2016.
  */
-public class ChatController extends Thread {
+public class ChatController implements Controller {
 
-    private ServerSocket serverSocket;
-    private Map<InetAddress, ChatConnection> connections = new HashMap<>();
-    private Timer timer = new Timer(true);
+    private final Map<InetAddress, AppController.Connection> connections;
 
-    public ChatController() throws IOException {
-        serverSocket = ServerSocketFactory.getDefault().createServerSocket();
-    }
-
-    public ChatController(int serverPort) throws IOException {
-        serverSocket = ServerSocketFactory.getDefault().createServerSocket(serverPort);
+    public ChatController(Map<InetAddress, AppController.Connection> connections) {
+        this.connections = connections;
     }
 
     @Override
-    public void run() {
-        while (!isInterrupted())
-            try {
-                Socket socket = serverSocket.accept();
-                ChatConnection connection = new ChatConnection(socket, this);
-                connection.setDaemon(true);
-                connection.start();
-                connections.put(socket.getInetAddress(), connection);
-            } catch (Exception x) {
-                x.printStackTrace();
-            }
+    public void handleMessage(SystemMessage message, Socket clientSocket) {
+        ChatMessage chatMessage = (ChatMessage) message;
+        System.out.println("Chat controller received new message: " + message);
+        new MessageHandler(chatMessage);
     }
 
-    public void send(Message message, InetAddress address) throws IOException {
-        connections.get(address).send(message);
-    }
+    private class MessageHandler extends Thread {
 
-    public void sendToAll(Message message) throws IOException {
-        for (ChatConnection connection : this.connections.values()) {
-            connection.send(message);
+        private final ChatMessage message;
+
+        private MessageHandler(ChatMessage message) {
+            this.message = message;
+            this.setDaemon(true);
+            this.start();
         }
-    }
 
-    public void remove(InetAddress inetAddress) {
-        connections.remove(inetAddress);
+        @Override
+        public void run() {
+            try {
+                if (message.getAddressReceiver() != null)
+                    sendMessage(message, message.getAddressReceiver());
+                else
+                    sendMessageToAll(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void sendMessage(ChatMessage message, InetAddress address) throws IOException {
+            send(connections.get(address).out, message);
+        }
+
+        public void sendMessageToAll(ChatMessage message) throws IOException {
+            for (AppController.Connection connection : connections.values()) {
+                send(connection.out, message);
+            }
+        }
+
+        public void send(ObjectOutputStream out, ChatMessage message) throws IOException {
+            out.writeObject(message);
+            out.flush();
+        }
     }
 
 }

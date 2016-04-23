@@ -75,11 +75,6 @@ public class Group extends PostgresEntity {
 
     @Override
     public String toString() {
-        return "Group{" +
-                "id=" + super.getId() +
-                ", name='" + super.getName() + '\'' +
-                ", nationality='" + nationality + '\'' +
-                ", creation=" + creation +
-                '}';
+        return super.getName();
     }
 }

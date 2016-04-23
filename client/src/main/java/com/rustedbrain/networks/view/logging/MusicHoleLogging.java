@@ -1,13 +1,13 @@
 package com.rustedbrain.networks.view.logging;
 
-import com.rustedbrain.networks.controllers.utils.logging.PasswordVerifier;
+import com.rustedbrain.networks.controllers.utils.LoginController;
 import com.rustedbrain.networks.model.members.Account;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
+import java.net.InetAddress;
 import java.util.concurrent.TransferQueue;
 
 public class MusicHoleLogging extends JDialog {
@@ -28,7 +28,7 @@ public class MusicHoleLogging extends JDialog {
 
     {
         this.textFieldServerName.setText("127.0.0.1");
-        this.textFieldServerPort.setText("7777");
+        this.textFieldServerPort.setText("6666");
     }
 
     public MusicHoleLogging() {
@@ -53,10 +53,10 @@ public class MusicHoleLogging extends JDialog {
 
     private void onOK() {
         try {
-            PasswordVerifier verifier = PasswordVerifier.getInstance(this.textFieldServerName.getText(), this.textFieldServerPort.getText());
+            LoginController verifier = new LoginController(InetAddress.getByName(this.textFieldServerName.getText()), Integer.parseInt(this.textFieldServerPort.getText()));
             this.account = verifier.getAccount(this.textFieldLogin.getText(), new String(this.passwordFieldPassword.getPassword()));
             dispose();
-        } catch (IOException | ClassNotFoundException | NumberFormatException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage());
         }

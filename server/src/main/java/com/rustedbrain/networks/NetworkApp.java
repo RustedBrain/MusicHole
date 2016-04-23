@@ -1,8 +1,6 @@
 package com.rustedbrain.networks;
 
-import com.rustedbrain.networks.controllers.AudioController;
-import com.rustedbrain.networks.controllers.ChatController;
-import com.rustedbrain.networks.controllers.PasswordController;
+import com.rustedbrain.networks.controllers.AppController;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -13,31 +11,29 @@ import java.net.URL;
 
 public class NetworkApp {
 
-    private static ChatController chatController;
-    private static PasswordController passwordController;
-    private static AudioController audioController;
+    private static AppController appController;
     private static SessionFactory factory;
 
-    private static void initBeans() throws IOException {
-        URL whatismyip = new URL("http://checkip.amazonaws.com");
-        BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+    private static void initBeans() throws Exception {
+        factory = new Configuration().configure().buildSessionFactory();
+        appController = new AppController(6666, factory);
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        initBeans();
+        appController.start();
+        System.out.println("EXIT");
+    }
+
+    private static String getServerIp() throws IOException {
+        URL myIp = new URL("http://checkip.amazonaws.com");
+        BufferedReader in = new BufferedReader(new InputStreamReader(myIp.openStream()));
 
         String ip = in.readLine();
         if (ip == null || ip.isEmpty())
             throw new IllegalStateException();
+        else return ip;
 
-        factory = new Configuration().configure().buildSessionFactory();
-        chatController = new ChatController(6666);
-        passwordController = new PasswordController(ip, 7777, factory);
-        //audioController = new AudioController(8888);
-    }
-
-    public static void main(String[] args) throws IOException, InterruptedException {
-
-        initBeans();
-
-        chatController.start();
-        passwordController.start();
-        audioController.start();
     }
 }

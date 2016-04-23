@@ -61,12 +61,6 @@ public class Song extends PostgresEntity {
 
     @Override
     public String toString() {
-        return "Song{" +
-                "id=" + super.getId() +
-                ", name='" + super.getName() + '\'' +
-                ", size=" + size +
-                ", creation=" + creation +
-                ", path='" + path + '\'' +
-                '}';
+        return super.getName();
     }
 }

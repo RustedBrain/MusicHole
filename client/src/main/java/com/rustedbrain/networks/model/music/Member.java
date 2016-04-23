@@ -83,12 +83,6 @@ public class Member extends PostgresEntity {
 
     @Override
     public String toString() {
-        return "Member{" +
-                "pseudonym='" + pseudonym + '\'' +
-                ", id=" + super.getId() +
-                ", name='" + super.getName() + '\'' +
-                ", patronymic='" + patronymic + '\'' +
-                ", surname='" + surname + '\'' +
-                '}';
+        return super.getName();
     }
 }

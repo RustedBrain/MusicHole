@@ -1,15 +1,17 @@
 package com.rustedbrain.networks.view;
 
+import com.rustedbrain.networks.controllers.utils.AudioController;
+import com.rustedbrain.networks.controllers.utils.ChatController;
+import com.rustedbrain.networks.controllers.utils.LogoutController;
 import com.rustedbrain.networks.controllers.utils.chat.ChatClientFactory;
-import com.rustedbrain.networks.controllers.utils.chat.ChatClientHandler;
 import com.rustedbrain.networks.controllers.utils.chat.MessageUtil;
 import com.rustedbrain.networks.model.members.Account;
 import com.rustedbrain.networks.model.members.ProxyAccount;
-import com.rustedbrain.networks.sound.VUServer;
 
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.net.InetAddress;
 
 public class MusicHoleMainWindow extends JDialog {
     public JPopupMenu popup;
@@ -24,7 +26,6 @@ public class MusicHoleMainWindow extends JDialog {
     private JButton buttonSend;
     private JButton buttonPlay;
     private JButton buttonDownload;
-    private JProgressBar progressBar1;
     private JTextField textFieldLogin;
     private JTextField textFieldName;
     private JTextField textFieldSurname;
@@ -40,28 +41,26 @@ public class MusicHoleMainWindow extends JDialog {
     private JTextField textFieldNationality;
     private JLabel labelBirthday;
     private JTextField textFieldBirthday;
-    private JComboBox comboBox1;
-    private JComboBox comboBox2;
-    private JComboBox comboBox3;
-    private JLabel labelGenre;
-    private JLabel labelGroup;
-    private JLabel labelAlbum;
     private JList listChat;
     private JList listOnlineUsers;
+    private JEditorPane editorPaneInfo;
+    private JButton buttonChoice;
+    private JButton buttonBack;
+    private JButton refreshButton;
     private Account account;
-    private ChatClientHandler chat;
+    private ChatController chatController;
     private AccountInfoWindow accountInfoWindow = new AccountInfoWindow();
     private JPopupMenu menu = new JPopupMenu();
-    private com.rustedbrain.networks.sound.VUServer VUServer;
+    private LogoutController logoutController;
+    private AudioController audioController;
 
     {
         popupMenuInit();
-    }
+        listPlayListInit();
 
-    {
         try {
-            chatInit();
-            chat.start();
+            controllersInit();
+            chatController.start();
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Server is not available");
@@ -84,7 +83,11 @@ public class MusicHoleMainWindow extends JDialog {
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                dispose();
+                try {
+                    MusicHoleMainWindow.this.onClose();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
 
@@ -94,8 +97,8 @@ public class MusicHoleMainWindow extends JDialog {
 
         buttonReconnect.addActionListener(e -> {
             try {
-                chat.close();
-                chat = ChatClientFactory.getChatHandler(textFieldServerName.getText()
+                chatController.close();
+                chatController = ChatClientFactory.getChatHandler(textFieldServerName.getText()
                         , Integer.parseInt(textFieldPort.getText())
                         , listChat);
                 JOptionPane.showMessageDialog(MusicHoleMainWindow.this, "Successful");
@@ -125,7 +128,22 @@ public class MusicHoleMainWindow extends JDialog {
                         e1.printStackTrace();
                         JOptionPane.showMessageDialog(MusicHoleMainWindow.this, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
+            }
+        });
 
+        tabbedPaneMenus.addChangeListener(e -> {
+            JTabbedPane sourceTabbedPane = (JTabbedPane) e.getSource();
+            int index = sourceTabbedPane.getSelectedIndex();
+            if (sourceTabbedPane.getTitleAt(index).equalsIgnoreCase("music")) {
+                System.out.println(sourceTabbedPane.getTitleAt(index));
+                try {
+
+                    audioController.getAccount(null, null);
+
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+                System.out.println(1);
             }
         });
     }
@@ -137,10 +155,15 @@ public class MusicHoleMainWindow extends JDialog {
         this.setLocationRelativeTo(null);
     }
 
+    private void listPlayListInit() {
+        DefaultListModel listModel = new DefaultListModel();
+        listPlayList.setModel(listModel);
+    }
+
     private void onButtonSendClicked() throws Exception {
         if (textFieldChatAnswer.getText() != null && !textFieldChatAnswer.getText().equals("")) {
             ProxyAccount account = MessageUtil.createProxyAccount(MusicHoleMainWindow.this.account);
-            MessageUtil.sendToAll(chat, this.radioButtonAnonymous.isSelected(), textFieldChatAnswer.getText(), account);
+            MessageUtil.sendToAll(chatController, this.radioButtonAnonymous.isSelected(), textFieldChatAnswer.getText(), account);
             textFieldChatAnswer.setText(null);
         }
     }
@@ -148,7 +171,7 @@ public class MusicHoleMainWindow extends JDialog {
     private void popupMenuInit() {
         JMenuItem item = new JMenuItem("Info");
         item.addActionListener(e -> {
-            ProxyAccount proxyAccount = this.chat.getMessage(this.listChat.getSelectedIndex()).getAccount();
+            ProxyAccount proxyAccount = this.chatController.getMessage(this.listChat.getSelectedIndex()).getAccount();
             MusicHoleMainWindow.this.accountInfoWindow.fillAccountFields(proxyAccount);
             MusicHoleMainWindow.this.accountInfoWindow.pack();
             ViewUtil.centerWindow(MusicHoleMainWindow.this.accountInfoWindow);
@@ -157,16 +180,20 @@ public class MusicHoleMainWindow extends JDialog {
         menu.add(item);
     }
 
-    private void chatInit() throws IOException {
+
+    private void controllersInit() throws IOException {
+        String serverHost = "127.0.0.1";
+        String serverPort = "6666";
         DefaultListModel model = new DefaultListModel();
         this.listChat.setModel(model);
-
-        textFieldServerName.setText("127.0.0.1");
-        textFieldPort.setText("6666");
-        chat = ChatClientFactory.getChatHandler(
-                textFieldServerName.getText()
-                , Integer.parseInt(textFieldPort.getText())
-                , listChat);
+        textFieldServerName.setText(serverHost);
+        textFieldPort.setText(serverPort);
+        chatController = ChatClientFactory.getChatHandler(InetAddress.getByName(serverHost), Integer.parseInt(serverPort), listChat);
+        System.out.println("Chat controller ready");
+        logoutController = new LogoutController(InetAddress.getByName(serverHost), Integer.parseInt(serverPort));
+        System.out.println("Logout controller ready");
+        audioController = new AudioController(InetAddress.getByName(serverHost), Integer.parseInt(serverPort));
+        System.out.println("Audio controller ready");
     }
 
     private void setAccountInfo(Account account) {
@@ -178,12 +205,9 @@ public class MusicHoleMainWindow extends JDialog {
         this.textFieldBirthday.setText(account.getBirthday().toString());
     }
 
-    private void onClose() {
-        chat.close();
+    public void onClose() throws IOException {
+        this.logoutController.notifyServer();
+        chatController.close();
         dispose();
-    }
-
-    public void setVUServer(VUServer VUServer) {
-        this.VUServer = VUServer;
     }
 }

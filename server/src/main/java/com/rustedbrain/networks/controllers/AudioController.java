@@ -1,117 +1,81 @@
 package com.rustedbrain.networks.controllers;
 
-import javax.sound.sampled.*;
-import java.io.*;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+import com.rustedbrain.networks.model.messages.AudioMessage;
+import com.rustedbrain.networks.model.messages.SystemMessage;
+import com.rustedbrain.networks.model.music.Genre;
+import com.rustedbrain.networks.model.music.Song;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.nio.file.Paths;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by RustedBrain on 18.04.2016.
  */
-public class AudioController extends Thread {
+public class AudioController implements Controller {
 
-    boolean stopAudioCapture = false;
-    ByteArrayOutputStream byteOutputStream;
-    AudioFormat adFormat;
-    TargetDataLine targetDataLine;
-    SourceDataLine sourceLine;
-    InputStream inputStream;
+    private final Map<InetAddress, AppController.Connection> connections;
+    private final SessionFactory factory;
 
-    public static void main(String args[]) throws IOException, UnsupportedAudioFileException {
-        AudioController audioController = new AudioController();
-        audioController.captureAudio();
+    public AudioController(Map<InetAddress, AppController.Connection> connections, SessionFactory factory) {
+        this.connections = connections;
+        this.factory = factory;
     }
 
-    public static byte[] getAudioDataBytes(byte[] sourceBytes, AudioFormat audioFormat) throws UnsupportedAudioFileException, IllegalArgumentException, Exception {
-        if (sourceBytes == null || sourceBytes.length == 0 || audioFormat == null) {
-            throw new IllegalArgumentException("Illegal Argument passed to this method");
+    @Override
+    public void handleMessage(SystemMessage message, Socket clientSocket) {
+        AudioMessage audioMessage = (AudioMessage) message;
+        System.out.println("Audio controller received new message: " + message);
+        new AudioHandler(audioMessage, clientSocket).start();
+    }
+
+
+    private class AudioHandler extends Thread {
+
+        private final AudioMessage message;
+        private final Socket client;
+
+        public AudioHandler(AudioMessage message, Socket clientSocket) {
+            this.message = message;
+            this.client = clientSocket;
         }
 
-        try (final ByteArrayInputStream bais = new ByteArrayInputStream(sourceBytes);
-             final AudioInputStream sourceAIS = AudioSystem.getAudioInputStream(bais)) {
-            AudioFormat sourceFormat = sourceAIS.getFormat();
-            AudioFormat convertFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sourceFormat.getSampleRate(), 16, sourceFormat.getChannels(), sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
-            try (final AudioInputStream convert1AIS = AudioSystem.getAudioInputStream(convertFormat, sourceAIS);
-                 final AudioInputStream convert2AIS = AudioSystem.getAudioInputStream(audioFormat, convert1AIS);
-                 final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                byte[] buffer = new byte[8192];
-                while (true) {
-                    int readCount = convert2AIS.read(buffer, 0, buffer.length);
-                    if (readCount == -1) {
-                        break;
-                    }
-                    baos.write(buffer, 0, readCount);
-                }
-                return baos.toByteArray();
-            }
-        }
-    }
-
-    public void startCapture() {
-        captureAudio();
-    }
-
-    public void stopCapture() {
-        stopAudioCapture = true;
-        targetDataLine.close();
-    }
-
-    private void captureAudio() {
-        try {
-
-            File file = Paths.get(".\\test.mp3").toFile();
-
-
-            AudioInputStream in = AudioSystem.getAudioInputStream(file);
-
-            this.inputStream = AudioSystem.getAudioInputStream(in.getFormat(), in);
-            Thread captureThread = new Thread(new CaptureThread());
-            captureThread.start();
-        } catch (Exception e) {
-            StackTraceElement stackEle[] = e.getStackTrace();
-            for (StackTraceElement val : stackEle) {
-                System.out.println(val);
-            }
-            System.exit(0);
-        }
-    }
-
-    private AudioFormat getAudioFormat() {
-        float sampleRate = 16000.0F;
-        int sampleInbits = 16;
-        int channels = 1;
-        boolean signed = true;
-        boolean bigEndian = false;
-        return new AudioFormat(sampleRate, sampleInbits, channels, signed, bigEndian);
-    }
-
-    class CaptureThread extends Thread {
-
-        byte tempBuffer[] = new byte[10000];
-
+        @Override
         public void run() {
 
-            byteOutputStream = new ByteArrayOutputStream();
-            stopAudioCapture = false;
-            try {
-                DatagramSocket clientSocket = new DatagramSocket(8786);
-                InetAddress IPAddress = InetAddress.getByName("127.0.0.1");
-                while (!stopAudioCapture) {
-                    sleep(1000);
-                    int cnt = inputStream.read(tempBuffer, 0, tempBuffer.length);
-                    if (cnt > 0) {
-                        DatagramPacket sendPacket = new DatagramPacket(tempBuffer, tempBuffer.length, IPAddress, 9786);
-                        clientSocket.send(sendPacket);
-                        byteOutputStream.write(tempBuffer, 0, cnt);
-                    }
+            Object object = message.getObject();
+
+            if (object == null) {
+                Session session = factory.openSession();
+                Criteria criteria = session.createCriteria(Genre.class);
+                ArrayList list = new ArrayList<>(criteria.list());
+                session.close();
+                try {
+                    new ObjectOutputStream(client.getOutputStream()).writeObject(list);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                byteOutputStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(0);
+            } else if (object instanceof Song) {
+                Song song = (Song) object;
+                System.out.println("Audio message object: song");
             }
+
+//            File file = new File("filename.mp3");
+//            AudioFileFormat baseFileFormat = null;
+//            try {
+//                baseFileFormat = new MpegAudioFileReader().getAudioFileFormat(file);
+//            } catch (UnsupportedAudioFileException | IOException e) {
+//                e.printStackTrace();
+//            }
+//            Map properties = baseFileFormat.properties();
+//            Long duration = (Long) properties.get("duration");
+//            System.out.println(duration);
         }
     }
 }
